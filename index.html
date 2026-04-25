@@ -1,0 +1,607 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>POS</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+        
+        :root {
+            font-family: 'Inter', system-ui, sans-serif;
+        }
+        
+        body {
+            background-color: #111111;
+        }
+        
+        .nav-button {
+            transition: all 0.2s ease;
+        }
+        
+        .nav-button.active {
+            background-color: #facc15;
+            color: #111111;
+            box-shadow: 0 0 15px rgba(250, 204, 21, 0.5);
+        }
+        
+        .card {
+            background-color: #1a1a1a;
+            border: 2px solid #facc15;
+        }
+        
+        .input {
+            background-color: #27272a;
+            border: 1px solid #facc15;
+            color: #facc15;
+        }
+        
+        .input:focus {
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.3);
+        }
+        
+        .table-row {
+            transition: all 0.2s ease;
+        }
+        
+        .table-row:hover {
+            background-color: #27272a;
+        }
+        
+        .tab-content {
+            animation: fadeIn 0.3s ease forwards;
+        }
+        
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        
+        .login-card {
+            box-shadow: 0 25px 50px -12px rgb(250 204 21);
+        }
+        /* Simplified utility classes to shorten markup */
+        .nav-btn { transition: all 0.2s ease; padding: .75rem 2rem; border-radius: 1.5rem; font-weight: 600; font-size: 1.125rem; display: flex; align-items: center; gap: .5rem; }
+        .nav-btn.active { background-color: #facc15; color: #111111; box-shadow: 0 0 15px rgba(250, 204, 21, 0.5); }
+
+        .form-input { background-color: #27272a; border: 1px solid #facc15; color: #facc15; }
+        .form-input:focus { outline: none; box-shadow: 0 0 0 3px rgba(250, 204, 21, 0.3); }
+
+        .card-lg { border-radius: 1.5rem; padding: 2rem; }
+
+        .btn { display: inline-flex; align-items: center; justify-content: center; background-color: #facc15; color: #111111; font-weight: 700; border-radius: 1.5rem; transition: all .12s ease; }
+        .btn:hover { background-color: #f7c21a; }
+        .btn-wide { flex: 1; height: 3rem; }
+        .btn-xl { height: 3.5rem; font-size: 1.125rem; }
+    </style>
+</head>
+<body class="min-h-screen text-amber-300">
+    <!-- LOGIN SCREEN -->
+    <div id="login-screen" class="flex items-center justify-center min-h-screen bg-[#111111]">
+        <div class="login-card card w-full max-w-md p-10 rounded-3xl">
+            <div class="text-center mb-8">
+                <h1 class="text-5xl font-bold tracking-widest text-amber-400">POS</h1>
+                <p class="text-amber-200 mt-2 text-sm">Point of Sale System</p>
+            </div>
+            
+            <div class="space-y-8">
+                <div>
+                    <label class="block text-amber-400 text-sm font-medium mb-2">User Name</label>
+                          <input id="username" type="text" 
+                              class="form-input w-full h-12 px-4 rounded-2xl text-lg placeholder:text-amber-500"
+                           placeholder="Enter username">
+                </div>
+                
+                <div>
+                    <label class="block text-amber-400 text-sm font-medium mb-2">Password</label>
+                          <input id="password" type="password" 
+                              class="form-input w-full h-12 px-4 rounded-2xl text-lg placeholder:text-amber-500"
+                           placeholder="Enter password">
+                </div>
+                
+                <button onclick="handleLogin()"
+                    class="btn btn-xl w-full">
+                    Login
+                </button>
+               
+            </div>
+        </div>
+    </div>
+
+    <!-- MAIN POS SCREEN -->
+    <div id="main-screen" class="hidden min-h-screen flex flex-col">
+        <!-- HEADER -->
+        <header class="bg-black border-b-2 border-amber-400 px-8 py-4 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+                <div class="w-9 h-9 bg-amber-400 rounded-2xl flex items-center justify-center text-[#111111] font-black text-2xl">P</div>
+                <h1 class="text-3xl font-bold tracking-[3px]">POS</h1>
+            </div>
+            
+            <div class="flex items-center gap-3">
+                <button onclick="setTab('dashboard')" 
+                    id="nav-dashboard"
+                    class="nav-btn active">
+                    <span>Dashboard</span>
+                </button>
+                <button onclick="setTab('customer')" 
+                    id="nav-customer"
+                    class="nav-btn">
+                    <span>Customer</span>
+                </button>
+                <button onclick="setTab('items')" 
+                    id="nav-items"
+                    class="nav-btn">
+                    <span>Items</span>
+                </button>
+                <button onclick="setTab('order')" 
+                    id="nav-order"
+                    class="nav-btn">
+                    <span>Order</span>
+                </button>
+                <button onclick="setTab('history')" 
+                    id="nav-history"
+                    class="nav-btn">
+                    <span>History</span>
+                </button>
+                <button onclick="setTab('user')" 
+                    id="nav-user"
+                    class="nav-btn">
+                    <span>User</span>
+                </button>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <div class="text-right">
+                    <p class="text-sm font-medium">Welcome Dinesh</p>
+                    <p class="text-xs text-amber-500"></p>
+                </div>
+                <div onclick="logout()" 
+                     class="w-10 h-10 bg-amber-400 hover:bg-amber-300 text-[#111111] rounded-2xl flex items-center justify-center cursor-pointer font-bold text-xl">➜]</div>
+            </div>
+        </header>
+
+        <div class="flex-1 p-8 overflow-auto">
+            
+            <!-- DASHBOARD TAB -->
+            <div id="dashboard-content" class="tab-content">
+                <h2 class="text-4xl font-bold mb-8">Dashboard</h2>
+                
+                <div class="mb-12">
+                    <h3 class="text-2xl font-semibold mb-6">Quick Overview</h3>
+                    <div class="grid grid-cols-3 gap-6">
+                        <!-- Today Sales -->
+                            <div class="card card-lg text-center">
+                            <p class="text-amber-200 text-sm mb-2">Today Sales $</p>
+                            <p id="today-sales" class="text-6xl font-black text-amber-400">25980.00</p>
+                        </div>
+                        <!-- Customers -->
+                        <div class="card card-lg text-center">
+                            <p class="text-amber-200 text-sm mb-2">Customers</p>
+                            <p id="total-customers" class="text-6xl font-black text-amber-400">25</p>
+                        </div>
+                        <!-- Products -->
+                        <div class="card card-lg text-center">
+                            <p class="text-amber-200 text-sm mb-2">Products</p>
+                            <p id="total-products" class="text-6xl font-black text-amber-400">88</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-2xl font-semibold mb-6">Last Order</h3>
+                        <div class="card card-lg overflow-hidden">
+                            <div class="bg-black px-8 py-4 grid grid-cols-4 text-amber-400 font-medium border-b border-amber-400">
+                            <div>Item code</div>
+                            <div>Customer id</div>
+                            <div>Qty</div>
+                            <div>Price</div>
+                        </div>
+                        <div id="last-order-body" class="px-8 py-5 text-amber-300">
+                            <!-- JS injected -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- CUSTOMER TAB -->
+            <div id="customer-content" class="tab-content hidden">
+                <div class="flex justify-between items-baseline mb-6">
+                    <h2 class="text-4xl font-bold">Customer Manage</h2>
+                    <div class="flex items-center gap-4">
+                        <div class="flex items-center gap-3">
+                            <span class="font-medium">Search :</span>
+                            <input id="customer-search" 
+                                   onkeyup="filterCustomers()"
+                                   type="text" 
+                                   placeholder="Search name / contact"
+                                   class="form-input w-72 h-10 px-5 rounded-3xl">
+                        </div>
+                    </div>
+                </div>
+                
+                            <div class="card card-lg mb-8">
+                    <div class="grid grid-cols-3 gap-8">
+                        <div>
+                            <label class="block text-amber-400 mb-2 font-medium">Name :</label>
+                            <input id="customer-name" type="text" class="form-input w-full h-12 px-5 rounded-3xl">
+                        </div>
+                        <div>
+                            <label class="block text-amber-400 mb-2 font-medium">Contact :</label>
+                            <input id="customer-contact" type="text" class="form-input w-full h-12 px-5 rounded-3xl">
+                        </div>
+                        <div>
+                            <label class="block text-amber-400 mb-2 font-medium">Address :</label>
+                            <input id="customer-address" type="text" class="form-input w-full h-12 px-5 rounded-3xl">
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-4 mt-10">
+                        <button onclick="saveCustomer()" 
+                            class="btn btn-wide">Save</button>
+                        <button onclick="updateCustomer()" 
+                            class="btn btn-wide">Update</button>
+                        <button onclick="deleteCustomer()" 
+                            class="btn btn-wide">Delete</button>
+                        <button onclick="resetCustomerForm()" 
+                            class="btn btn-wide">Reset</button>
+                    </div>
+                </div>
+                
+                            <div class="card card-lg overflow-hidden">
+                    <div class="bg-black px-8 py-4 grid grid-cols-4 text-amber-400 font-medium border-b border-amber-400">
+                        <div>ID</div>
+                        <div>Name</div>
+                        <div>Contact</div>
+                        <div>Address</div>
+                    </div>
+                    <div id="customer-table-body" class="divide-y divide-amber-400">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ITEMS TAB -->
+            <div id="items-content" class="tab-content hidden">
+                <div class="flex justify-between items-baseline mb-6">
+                    <h2 class="text-4xl font-bold">Items</h2>
+                    <div class="flex items-center gap-4">
+                        <div class="flex items-center gap-3">
+                            <span class="font-medium">Search :</span>
+                            <input id="item-search" 
+                                   onkeyup="filterItems()"
+                                   type="text" 
+                                   placeholder="Search item"
+                                   class="form-input w-72 h-10 px-5 rounded-3xl">
+                        </div>
+                    </div>
+                </div>
+                
+                            <div class="card card-lg mb-8">
+                    <div class="grid grid-cols-4 gap-8">
+                        <div>
+                            <label class="block text-amber-400 mb-2 font-medium">Item code :</label>
+                            <input id="item-code" type="text" class="form-input w-full h-12 px-5 rounded-3xl">
+                        </div>
+                        <div>
+                            <label class="block text-amber-400 mb-2 font-medium">Name :</label>
+                            <input id="item-name" type="text" class="form-input w-full h-12 px-5 rounded-3xl">
+                        </div>
+                        <div>
+                            <label class="block text-amber-400 mb-2 font-medium">Price :</label>
+                            <input id="item-price" type="number" class="form-input w-full h-12 px-5 rounded-3xl">
+                        </div>
+                        <div>
+                            <label class="block text-amber-400 mb-2 font-medium">Qty :</label>
+                            <input id="item-qty" type="number" class="form-input w-full h-12 px-5 rounded-3xl">
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-4 mt-10">
+                        <button onclick="saveItem()" 
+                            class="btn btn-wide">Save</button>
+                        <button onclick="updateItem()" 
+                            class="btn btn-wide">Update</button>
+                        <button onclick="deleteItem()" 
+                            class="btn btn-wide">Delete</button>
+                        <button onclick="resetItemForm()" 
+                            class="btn btn-wide">Reset</button>
+                    </div>
+                </div>
+                
+                <div class="card rounded-3xl overflow-hidden">
+                    <div class="bg-black px-8 py-4 grid grid-cols-4 text-amber-400 font-medium border-b border-amber-400">
+                        <div>Item code</div>
+                        <div>Name</div>
+                        <div>Price</div>
+                        <div>Qty</div>
+                    </div>
+                    <div id="item-table-body" class="divide-y divide-amber-400">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ORDER TAB -->
+            <div id="order-content" class="tab-content hidden">
+                <h2 class="text-4xl font-bold mb-8">Orders</h2>
+                
+                <div class="grid grid-cols-12 gap-8">
+                    <!-- Order Form -->
+                   <!-- Inside order-content, replace the left form section with this: -->
+            <div class="col-span-4 card card-lg">
+                 <div class="space-y-6">
+                   <div>
+                       <label class="block text-amber-400 mb-2 font-medium">Customer :</label>
+                       <select id="order-customer-select" class="form-input w-full h-12 px-5 rounded-3xl">
+                         <!-- Populated by JS -->
+                      </select>
+                  </div>
+                <div>
+                   <label class="block text-amber-400 mb-2 font-medium">Item :</label>
+                   <select id="order-item-select" class="form-input w-full h-12 px-5 rounded-3xl">
+                    <!-- Populated by JS -->
+                     </select>
+                </div>
+              <div class="grid grid-cols-2 gap-6">
+                <div>
+                   <label class="block text-amber-400 mb-2 font-medium">Qty :</label>
+                   <input id="order-qty" type="number" value="1" class="form-input w-full h-12 px-5 rounded-3xl">
+                </div>
+                <div>
+                   <label class="block text-amber-400 mb-2 font-medium">Date :</label>
+                   <input id="order-date" type="date" class="form-input w-full h-12 px-5 rounded-3xl">
+               </div>
+           </div>
+        
+                            <button onclick="addToCart()" class="btn btn-xl w-full mt-4">
+                                Add to cart
+                            </button>
+              </div>
+              </div>
+                    
+                    <!-- Cart Table -->
+                    <div class="col-span-8">
+                        <div class="card rounded-3xl overflow-hidden">
+                            <div class="bg-black px-8 py-4 grid grid-cols-5 text-amber-400 font-medium border-b border-amber-400">
+                                <div class="col-span-1">Item code</div>
+                                <div class="col-span-1">Customer id</div>
+                                <div class="col-span-1">Qty</div>
+                                <div class="col-span-1">Price</div>
+                                <div class="col-span-1 text-right">Action</div>
+                            </div>
+                            <div id="cart-body" class="divide-y divide-amber-400 max-h-80 overflow-auto">
+                                <!-- Populated by JS -->
+                            </div>
+                        </div>
+                        
+                        <!-- Total -->
+                        <div class="flex justify-end mt-8">
+                            <div class="card rounded-3xl px-8 py-6 w-96">
+                                <div class="space-y-4">
+                                    <div class="flex justify-between text-lg">
+                                        <span>Subtotal</span>
+                                        <span id="cart-subtotal" class="text-amber-400 font-mono">0.00</span>
+                                    </div>
+                                    <div class="flex justify-between items-center">
+                                        <label class="text-amber-400 font-medium">Discount %</label>
+                                        <input id="discount-percent" type="number" min="0" max="100" value="0" 
+                                               class="form-input w-20 h-10 px-3 rounded-2xl text-center" 
+                                               onchange="renderCart()">
+                                    </div>
+                                    <div class="flex justify-between text-lg">
+                                        <span>Discount Amount</span>
+                                        <span id="discount-amount" class="text-red-400 font-mono">0.00</span>
+                                    </div>
+                                    <div class="border-t border-amber-400 pt-4 flex justify-between text-2xl font-bold">
+                                        <span>Total</span>
+                                        <span id="cart-total" class="text-amber-400">0.00</span>
+                                    </div>
+                                </div>
+                                
+                                <div class="flex gap-4 mt-8">
+                                        <button onclick="cancelOrder()" 
+                                            class="btn btn-wide">Cancel</button>
+                                        <button onclick="purchaseOrder()" 
+                                            class="btn btn-wide">Purchase</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- HISTORY TAB -->
+            <div id="history-content" class="tab-content hidden">
+                <h2 class="text-4xl font-bold mb-8">Order History</h2>
+                <div class="card rounded-3xl overflow-hidden">
+                    <div class="bg-black px-8 py-4 grid grid-cols-6 text-amber-400 font-medium border-b border-amber-400">
+                        <div>Order ID</div>
+                        <div>Date</div>
+                        <div>Customer ID</div>
+                        <div class="col-span-2">Items</div>
+                        <div class="text-right">Total</div>
+                    </div>
+                    <div id="history-body" class="divide-y divide-amber-400">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+            
+            <!-- USER TAB -->
+            <div id="user-content" class="tab-content hidden">
+                <div class="flex justify-between items-baseline mb-6">
+                    <h2 class="text-4xl font-bold">User Manage</h2>
+                    <div class="flex items-center gap-4">
+                        <div class="flex items-center gap-3">
+                            <span class="font-medium">Search :</span>
+                            <input id="user-search" 
+                                   onkeyup="filterUsers()"
+                                   type="text" 
+                                   placeholder="Search name / email"
+                                   class="form-input w-72 h-10 px-5 rounded-3xl">
+                        </div>
+                    </div>
+                </div>
+                
+                            <div class="card card-lg mb-8">
+                    <div class="grid grid-cols-2 gap-8">
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block text-amber-400 mb-2 font-medium">Name :</label>
+                                <input id="user-name" type="text" class="form-input w-full h-12 px-5 rounded-3xl">
+                            </div>
+                            <div>
+                                <label class="block text-amber-400 mb-2 font-medium">Contact :</label>
+                                <input id="user-contact" type="text" class="form-input w-full h-12 px-5 rounded-3xl">
+                            </div>
+                            <div>
+                                <label class="block text-amber-400 mb-2 font-medium">User id :</label>
+                                <input id="user-id-input" type="text" class="form-input w-full h-12 px-5 rounded-3xl">
+                            </div>
+                        </div>
+                        <div class="space-y-6">
+                            <div>
+                                <label class="block text-amber-400 mb-2 font-medium">Email :</label>
+                                <input id="user-email" type="email" class="form-input w-full h-12 px-5 rounded-3xl">
+                            </div>
+                            <div>
+                                <label class="block text-amber-400 mb-2 font-medium">Password :</label>
+                                <input id="user-password" type="password" class="form-input w-full h-12 px-5 rounded-3xl">
+                            </div>
+                            <div>
+                                <label class="block text-amber-400 mb-2 font-medium">Address :</label>
+                                <input id="user-address" type="text" class="form-input w-full h-12 px-5 rounded-3xl">
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-4 mt-10">
+                        <button onclick="saveUser()" 
+                            class="btn btn-wide">Save</button>
+                        <button onclick="updateUser()" 
+                            class="btn btn-wide">Update</button>
+                        <button onclick="deleteUser()" 
+                            class="btn btn-wide">Delete</button>
+                        <button onclick="resetUserForm()" 
+                            class="btn btn-wide">Reset</button>
+                    </div>
+                </div>
+                
+                <div class="card rounded-3xl overflow-hidden">
+                    <div class="bg-black px-8 py-4 grid grid-cols-5 text-amber-400 font-medium border-b border-amber-400">
+                        <div>User id</div>
+                        <div>Name</div>
+                        <div>Contact</div>
+                        <div>Address</div>
+                        <div>Email</div>
+                    </div>
+                    <div id="user-table-body" class="divide-y divide-amber-400">
+                        <!-- Populated by JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- NOTIFICATION MODALS -->
+    <div id="notification-overlay" class="hidden fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center z-50">
+        <!-- Alert Modal -->
+        <div id="alert-modal" class="hidden bg-gradient-to-br from-amber-900 to-black border-2 border-amber-400 rounded-3xl p-8 max-w-md w-full shadow-2xl" style="box-shadow: 0 0 30px rgba(250, 204, 21, 0.3);">
+            <div class="flex items-start gap-4">
+                <div class="text-4xl">❓</div>
+                <div class="flex-1">
+                    <h3 class="text-xl font-bold text-amber-300 mb-3">Alert</h3>
+                    <p id="alert-message" class="text-amber-100 mb-6 leading-relaxed"></p>
+                    <button onclick="notificationManager.closeAlert()" class="w-full bg-amber-400 hover:bg-amber-300 text-black font-bold py-3 rounded-2xl transition-all active:scale-95">
+                        OK
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Confirm Modal -->
+        <div id="confirm-modal" class="hidden bg-gradient-to-br from-amber-900 to-black border-2 border-amber-400 rounded-3xl p-8 max-w-md w-full shadow-2xl" style="box-shadow: 0 0 30px rgba(250, 204, 21, 0.3);">
+            <div class="flex items-start gap-4">
+                <div class="text-4xl">❓</div>
+                <div class="flex-1">
+                    <h3 class="text-xl font-bold text-amber-300 mb-3">Confirm</h3>
+                    <p id="confirm-message" class="text-amber-100 mb-6 leading-relaxed"></p>
+                    <div class="flex gap-4">
+                        <button onclick="notificationManager.confirmYes()" class="flex-1 bg-amber-400 hover:bg-amber-300 text-black font-bold py-3 rounded-2xl transition-all active:scale-95">
+                            Yes
+                        </button>
+                        <button onclick="notificationManager.confirmNo()" class="flex-1 bg-gray-600 hover:bg-gray-500 text-white font-bold py-3 rounded-2xl transition-all active:scale-95">
+                            No
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Success Modal -->
+        <div id="success-modal" class="hidden bg-gradient-to-br from-green-900 to-black border-2 border-green-400 rounded-3xl p-8 max-w-md w-full shadow-2xl" style="box-shadow: 0 0 30px rgba(34, 197, 94, 0.3);">
+            <div class="flex items-start gap-4">
+                <div class="text-4xl">✅</div>
+                <div class="flex-1">
+                    <h3 class="text-xl font-bold text-green-300 mb-3">Success</h3>
+                    <p id="success-message" class="text-green-100 mb-6 leading-relaxed"></p>
+                    <button onclick="notificationManager.closeSuccess()" class="w-full bg-green-400 hover:bg-green-300 text-black font-bold py-3 rounded-2xl transition-all active:scale-95">
+                        OK
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error Modal -->
+        <div id="error-modal" class="hidden bg-gradient-to-br from-red-900 to-black border-2 border-red-400 rounded-3xl p-8 max-w-md w-full shadow-2xl" style="box-shadow: 0 0 30px rgba(239, 68, 68, 0.3);">
+            <div class="flex items-start gap-4">
+                <div class="text-4xl">❌</div>
+                <div class="flex-1">
+                    <h3 class="text-xl font-bold text-red-300 mb-3">Error</h3>
+                    <p id="error-message" class="text-red-100 mb-6 leading-relaxed"></p>
+                    <button onclick="notificationManager.closeError()" class="w-full bg-red-400 hover:bg-red-300 text-black font-bold py-3 rounded-2xl transition-all active:scale-95">
+                        OK
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Notification Manager -->
+    <script src="Lib/NotificationManager.js"></script>
+
+    <!-- Model & View -->
+    <script src="Db/db.js"></script>
+    <script src="Model/CustomerModel.js"></script>
+    <script src="Model/ItemModel.js"></script>
+    <script src="Model/UserModel.js"></script>
+    <script src="Model/CartModel.js"></script>
+    <script src="Model/OrderModel.js"></script>
+    <script src="Model/DashboardModel.js"></script>
+    <script src="Model/Model.js"></script>
+    <script src="View/LoginView.js"></script>
+    <script src="View/DashboardView.js"></script>
+    <script src="View/CustomerView.js"></script>
+    <script src="View/ItemView.js"></script>
+    <script src="View/OrderView.js"></script>
+    <script src="View/HistoryView.js"></script>
+    <script src="View/UserView.js"></script>
+    <script src="View/View.js"></script>
+    <script src="View/View.js"></script>
+    
+    <!-- Individual Controllers -->
+    <script src="Controllers/AuthController.js"></script>
+    <script src="Controllers/DashboardController.js"></script>
+    <script src="Controllers/CustomerController.js"></script>
+    <script src="Controllers/ItemController.js"></script>
+    <script src="Controllers/UserController.js"></script>
+    <script src="Controllers/OrderController.js"></script>
+    <script src="Controllers/AppController.js"></script>
+    <script src="Script.js"></script>
+    
+    <!-- App Initialization -->
+    <script src="App.js"></script>
+    </body>
+</html>
